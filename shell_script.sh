@@ -43,9 +43,7 @@ if [ -d "$FOLDER_PATH" ]; then
     
     # go back the parent directory and run the program given all sub-directories
     cd ..
-    for i in "${arrays[@]}" ; do
-        #echo "$FOLDER_PATH/$i"
-        
+    for i in "${arrays[@]}" ; do 
         if [ ! -d "$PWD/result/$i" ]; then
             mkdir "$PWD/result/$i"
         fi
@@ -55,14 +53,16 @@ if [ -d "$FOLDER_PATH" ]; then
             | python3 gridGeneration.py --outFolder "$PWD/result/$i" \
                                         --maxDepth $LEVEL \
                                         --countNum $COUNT_NUM \
-                                        --gridPercent $GRID_PERCENT
+                                        --gridPercent $GRID_PERCENT \
+            > "$PWD/result/$i-table.csv"
         elif [[ $kdTree_chose == "cascade-kdtree" ]]; then
             python3 geoProcess.py --folderPath "$FOLDER_PATH/$i" \
             | python3 gridGeneration.py --outFolder "$PWD/result/$i" \
                                         --maxDepth $LEVEL \
                                         --countNum $COUNT_NUM \
                                         --gridPercent $GRID_PERCENT \
-                                        --maxCount $MAX_COUNT
+                                        --maxCount $MAX_COUNT \
+            > "$PWD/result/$i-table.csv"
         fi
     done
 else

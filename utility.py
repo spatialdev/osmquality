@@ -1,6 +1,6 @@
 import json
 import numpy as np
-import os, csv
+import os, csv, sys
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -9,7 +9,7 @@ class Utility:
     def __init__(self, input_histogram):
         self.hist = input_histogram
     def __del__(self):
-        print("deling", self)
+        sys.stderr.write("deling" + str(self) + '\n')
     # =====================================
     # calculate the probability distribution given a histogram
     def distribution_computation(self, name):
@@ -123,8 +123,23 @@ class Utility:
             writer = csv.writer(out_f)
             writer.writerows(out_list)
     # =====================================
-
-
+    # generate a row of a summary table
+    def summary_table_row_generation(self, input_data, name_number_file, initial_extend, gridsize):
+        # variables
+        flags = 0
+        osm_features = {}
+        
+        print('flags,flagged_OSM_feature,totalArea,gridSize')
+        # calculate total flags
+        for element_index in range(1, len(name_number_file)):
+            #print(element)
+            flags += int(name_number_file[element_index][1])
+        # calculate the unique number of OSM features
+        for row in input_data:
+            osm_features[int(row[3])] = osm_features.get(int(row[3]), 0) + 1
+        # write out one row
+        print(str(flags)+ ',' + str(len(osm_features)) + ',' + str(initial_extend) + ',' + str(gridsize))
+        
 
 
 

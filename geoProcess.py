@@ -142,7 +142,6 @@ def bounding_box_process(in_folder_path):
     
     # loop through all geojson files
     for f in os.listdir(in_folder_path):
-        #print('File Name:', os.path.join(in_folder_path, f))
         # ==========================================
         if os.path.isdir(os.path.join(in_folder_path, f)):
             for subdir, dirs, files in os.walk(os.path.join(in_folder_path, f)):
@@ -154,7 +153,6 @@ def bounding_box_process(in_folder_path):
         # ==========================================
         # load the Geo-json file and ignore other files
         if os.path.splitext(os.path.join(in_folder_path, f))[1] == '.geojson':
-            #print('name:', os.path.splitext(f)[0])
             if len(os.path.splitext(f)[0].split('-')) == 3:
                 name_num_list.append([os.path.splitext(f)[0].split('-')[0], int(os.path.splitext(f)[0].split('-')[2])])
             
@@ -189,10 +187,7 @@ def bounding_box_process(in_folder_path):
                                         data['features'][0]['properties']['feature_properties'][0]['ItemId'], f])
 
             # process all geometries excluding the 1st one
-            for index in range(len(data['features'])):
-                # skip the 1st one
-                if index == 0:
-                    continue
+            for index in range(1, len(data['features'])):
                 # find a bounding box given a set of coordinates
                 # determine whether or not the input type is geometrycollection. If so, invoke an unwrap function
                 if data['features'][index]['geometry']['type'] == 'GeometryCollection':

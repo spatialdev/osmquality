@@ -5,7 +5,7 @@ from kd_tree import kdTree
 from utility import Utility
 import argparse
 import ast
-import pandas as pd
+#import pandas as pd
 
 # Road counts
 def road_count(in_road, in_grids, in_counts, out_folder, initial_bb):
@@ -47,9 +47,8 @@ def road_count(in_road, in_grids, in_counts, out_folder, initial_bb):
                         elif in_grids[ind][3] != initial_bb[3] and in_grids[ind][2] != initial_bb[2]:
                             if (np_array[coordinate_ind, :][0] >= in_grids[ind][0] and np_array[coordinate_ind, :][0] < in_grids[ind][2] and
                                 np_array[coordinate_ind, :][1] >= in_grids[ind][1] and np_array[coordinate_ind, :][1] < in_grids[ind][3]):
-                                tmp_array[ind] += 1
-                
-                #print('temp :', tmp_array)
+                                tmp_array[ind] += 1                
+        
                 for ind2 in range(len(in_grids)):
                     if tmp_array[ind2] > 0:
                         road_counts_his[ind2] += 1
@@ -63,13 +62,6 @@ def road_count(in_road, in_grids, in_counts, out_folder, initial_bb):
         with open(os.path.join(out_folder, 'road-' + os.path.basename(out_folder) + '.csv'), "w") as out_f:
             writer = csv.writer(out_f)
             writer.writerows(csv_matrix)
-# =======================================
-# Compute cell size
-def cell_size_computation(depth_val, bounding_box_collec):
-    print('Level ', depth_val)
-    print('Grid size ( Width (X length) x Height (Y length) ): ', (bounding_box_collec[0][2] - bounding_box_collec[0][0]
-          , bounding_box_collec[0][3] - bounding_box_collec[0][1]))
-    print('========================')
 # =======================================
 def main():
     # declare arguments and variables
@@ -85,8 +77,6 @@ def main():
     folder_path = args.outFolder
     count_num = int(args.countNum)
     grid_percent = float(args.gridPercent)
-
-    print(os.path.join(folder_path, 'histogram'))
     
     path = 'histogram'
     geojson_path = 'geojson'
@@ -129,8 +119,6 @@ def main():
 
         # get counts
         hist, gridid_collec= tree_cons.counts_calculation()
-        # Cell size computation
-        cell_size_computation(depth_count, bb_collec)
         del tree_cons
 
         util = Utility(hist)
@@ -175,15 +163,10 @@ def main():
                 # calculate areas
                 grid_area = input_data['iniArea'] / (2**(depth_count))
                 grid_area = round(grid_area * 1e-6, 2)
-                # write out a csv file
-                file_path = os.path.join(folder_path, 'tree_1-log.csv')
-                util.csv_file_write(input_data['data'], [gridid_collec], file_path, [grid_area])
 
-                # SQL-like Query
-                sotm = pd.read_csv(file_path)
-                final_df = sotm.groupby('grid_id').agg({'atlas_id':'nunique', 'osm_id':'nunique', 'flag_id':'nunique', 'check_name':'nunique'})
-                final_df.to_csv(os.path.join(folder_path, 'tree_1-log_join_results.csv'), sep = ',', index ='grid_id')
-
+                # wirte out one row
+                util.summary_table_row_generation(input_data['data'], input_data['nameNum'], round(input_data['iniArea'] * 1e-6, 2), grid_area)
+                
                 # write out a Geojson file
                 util.geojson_write(depth_count, bb_collec, os.path.join(folder_path, geojson_path), cell_num, input_data['iniArea'],
                                    None, 'tree_v1', flag_val = True)
@@ -212,7 +195,6 @@ def main():
         for index in range(len(optimal_grid_size_list)):
             if optimal_count_list[index] > max_count:
                 big_grid_list.append(optimal_grid_size_list[index])
-                #big_grid_ind_list.append(index)
         if len(big_grid_list) != 0:
             # refine big grids through applying the 2nd K-D tree
             for extension_ind in range(len(big_grid_list)):
@@ -240,20 +222,12 @@ def main():
                         break
             # ======================================
             util = Utility(new_counts_list)
-            # write out a csv file
-            file_path_tree_2 = os.path.join(folder_path, 'tree_2-log.csv' )
-            util.csv_file_write(input_data['data'], new_grid_id_list, file_path_tree_2, new_area_list)
-
-            # SQL-like Query
-            sotm = pd.read_csv(file_path_tree_2)
-            final_df = sotm.groupby('grid_id').agg({'atlas_id':'nunique', 'osm_id':'nunique', 'flag_id':'nunique', 'check_name':'nunique'})
-            final_df.to_csv(os.path.join(folder_path, 'tree_2-log_join_results.csv'), sep = ',', index ='grid_id')
-
+            
             # write out a Geojson file
             util.geojson_write(first_depth, new_grids_list,
                                os.path.join(folder_path, geojson_path), None, None, grid_ids, 'cascade-kdtree', flag_val = True)
-            print('Grid number after the 2nd k-d tree:', len(new_grids_list))
-            print('Count number after the 2nd k-d tree:', len(new_counts_list))
+            sys.stderr.write("Grid number after the 2nd k-d tree: " + str(len(new_grids_list)) + '\n')
+            sys.stderr.write("Count number after the 2nd k-d tree::" + str(len(new_counts_list)) + '\n')
             del util
 if __name__ == "__main__":
     main()

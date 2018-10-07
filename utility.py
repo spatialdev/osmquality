@@ -81,7 +81,6 @@ class Utility:
 
         # save the dictionary structure as a Geojson file
         if kd_tree_mode == 'tree_v1':
-            #grid_area = initial_area / (2**(level_val + 1))
             grid_area = initial_area / (2**(level_val))
             grid_area = round(grid_area * 1e-6, 2)
 
@@ -132,7 +131,6 @@ class Utility:
         print('flags,flagged_OSM_feature,totalArea,gridSize')
         # calculate total flags
         for element_index in range(1, len(name_number_file)):
-            #print(element)
             flags += int(name_number_file[element_index][1])
         # calculate the unique number of OSM features
         for row in input_data:

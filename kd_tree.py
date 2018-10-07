@@ -119,13 +119,11 @@ class kdTree:
                 for coordinate_ind in range(np_array.shape[0]):
                     self.point_within_grid(ind, np_array[coordinate_ind, :], self.bb_collection[ind], tmp_array, None, None)
             
-            #print('temp :', tmp_array)
             tmp_grid_id_list = []
             for ind2 in range(len(self.bb_collection)):
                 if tmp_array[ind2] > 0:
                     self.histogram[ind2] += 1
-                    tmp_grid_id_list.append(ind2 + self.id_start)                    
-            #self.gridid_collection[itemid] = np.nonzero(tmp_array)[0] + self.id_start
+                    tmp_grid_id_list.append(ind2 + self.id_start)
             self.gridid_collection[itemid + '-' + geo_type] = tmp_grid_id_list
         # ==================================
     # =====================================

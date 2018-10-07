@@ -174,8 +174,6 @@ def bounding_box_process(in_folder_path):
                                                                 data['features'][0]['properties']['feature_properties'],
                                                                 int_array[0], f)
                     # ==============================
-                    #for element in geometry_collec:
-                    #    output_data.append(element)
                     output_data = output_data + geometry_collec
                 # ==============================
             else:
@@ -197,8 +195,6 @@ def bounding_box_process(in_folder_path):
                                                                             data['features'][index]['properties']['feature_properties'],
                                                                             int_array[index], f)
                         # ==============================
-                        #for element in tmp_geometry_collec:
-                        #    output_data.append(element)
                         output_data = output_data + tmp_geometry_collec
                     # ==============================
                 else:

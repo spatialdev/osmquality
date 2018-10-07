@@ -5,7 +5,6 @@ from kd_tree import kdTree
 from utility import Utility
 import argparse
 import ast
-#import pandas as pd
 
 # Road counts
 def road_count(in_road, in_grids, in_counts, out_folder, initial_bb):

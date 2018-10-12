@@ -54,18 +54,18 @@ class kdTree:
         self.build_subtree(node['right'], depth_value + 1, right_down_bb)
         
     # =====================================
-    # help function
-    def help_fun(self, input_tree, level_val):
+    # travel the k-d tree recursively
+    def tree_travel(self, input_tree, level_val):
         if isinstance(input_tree, dict):
-            self.help_fun(input_tree['left'], level_val + 1)
-            self.help_fun(input_tree['right'], level_val + 1)
+            self.tree_travel(input_tree['left'], level_val + 1)
+            self.tree_travel(input_tree['right'], level_val + 1)
         else:
             self.bb_collection.append(input_tree)
     # =====================================
     # get all leaves
     def get_leaves(self, input_tree):
         # get all leaves
-        self.help_fun(input_tree, 0)
+        self.tree_travel(input_tree, 0)
         return self.bb_collection
     # =====================================
     def point_within_grid(self, ind, geo_coordinate, bb_coordinate, in_tmp_array, item_id, in_geo):

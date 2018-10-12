@@ -31,10 +31,10 @@ class Utility:
         fig, ax = plt.subplots()
         ax.bar(range(len(statistics_result)), list(statistics_result.values()), align='center')
         plt.xticks((0, len(statistics_result) - 1), (x_axis[0], x_axis[len(statistics_result) - 1]))
-        plt.xlabel('Counts (or other measurements)')
-        plt.ylabel('Frequency (# of grids has that counts)')
+        plt.xlabel('Number of Flagged Features')
+        plt.ylabel('Number of Grids')
         fig.savefig(name)
-
+        
         return statistics_result, x_axis, count_0_pair, len(statistics_result)
     # =====================================
     # Write out geojson file

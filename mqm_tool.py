@@ -114,7 +114,7 @@ def stop_condition(count_zero_list, count_list, grid_percent, count_num, cell_nu
             else:
                 total_count_within_count_num += out_distribution[count_list[i]]
         
-        if (float(total_count_within_count_num) / float(total_grids)) > grid_percent:
+        if (float(total_count_within_count_num / total_grids)) > grid_percent:
             stop_flag = True
             
     return stop_flag

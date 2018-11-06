@@ -114,10 +114,3 @@ class Utility:
     def get_sub_directionaries(self, folder_path):
         return [os.path.join(os.path.join(folder_path, sub_folder)) for sub_folder in os.listdir(folder_path)
                 if os.path.isdir(os.path.join(folder_path, sub_folder))]
-
-
-
-
-
-
-

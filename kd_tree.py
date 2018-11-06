@@ -102,6 +102,22 @@ class kdTree:
                     self.histogram[ind] += 1
                     self.gridid_collection[item_id + '-' + in_geo] = ind + self.id_start
     # =====================================
+    # calculate the number of counts
+    def counting_function(self, in_coordinates):
+        np_array = np.array(in_coordinates)
+        tmp_array = np.zeros(len(self.bb_collection))
+        
+        # loop through all cells
+        for ind in range(len(self.bb_collection)):
+            for coordinate_ind in range(np_array.shape[0]):
+                self.point_within_grid(ind, np_array[coordinate_ind, :], self.bb_collection[ind], tmp_array, None, None)
+        tmp_grid_id_list = []
+        for ind2 in range(len(self.bb_collection)):
+            if tmp_array[ind2] > 0:
+                self.histogram[ind2] += 1
+                tmp_grid_id_list.append(ind2 + self.id_start)
+        return tmp_grid_id_list
+    # ======================================
     # calculate the counts in every cell
     def object_count(self, geo_type, in_coordinates, itemid):
         # ==================================
@@ -112,20 +128,24 @@ class kdTree:
                 self.point_within_grid(ind, np_array, self.bb_collection[ind], None, itemid, geo_type)
         # ==================================
         elif geo_type == 'LineString':
-            np_array = np.array(in_coordinates)
-            tmp_array = np.zeros(len(self.bb_collection))
-            # loop through all cells
-            for ind in range(len(self.bb_collection)):
-                for coordinate_ind in range(np_array.shape[0]):
-                    self.point_within_grid(ind, np_array[coordinate_ind, :], self.bb_collection[ind], tmp_array, None, None)
-            
-            tmp_grid_id_list = []
-            for ind2 in range(len(self.bb_collection)):
-                if tmp_array[ind2] > 0:
-                    self.histogram[ind2] += 1
-                    tmp_grid_id_list.append(ind2 + self.id_start)
-            self.gridid_collection[itemid + '-' + geo_type] = tmp_grid_id_list
+            self.gridid_collection[itemid + '-' + geo_type] = self.counting_function(in_coordinates)
         # ==================================
+        elif geo_type == 'Polygon':
+            polygon_ids_list = []
+            # iterate through all polygons
+            for polygon_index in range(len(in_coordinates)):
+                polygon_ids_list += self.counting_function(in_coordinates[polygon_index])
+            
+            self.gridid_collection[itemid + '-' + geo_type] = polygon_ids_list
+        # ==================================
+        elif geo_type == 'MultiPolygon':
+            multi_polygon_ids_list = []
+            for polygon_ind in range(len(in_coordinates)):
+                # get single polygon
+                for single_polygon_index in range(len(in_coordinates[polygon_ind])):
+                    multi_polygon_ids_list += self.counting_function(in_coordinates[polygon_ind][single_polygon_index])
+            
+            self.gridid_collection[itemid + '-' + geo_type] = multi_polygon_ids_list
     # =====================================
     # calculate the counts in every cell
     def counts_calculation(self):

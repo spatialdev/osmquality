@@ -17,46 +17,58 @@ def road_count(in_road, in_grids, in_counts, out_folder, initial_bb):
         with open(in_road, encoding='utf-8') as new_f:
             in_data = json.load(new_f)
         
-        # process all geometries excluding the 1st one
-        for index in range(len(in_data['features'])):
+        # extract all geometries from the geojson file
+        for geometry_index in range(len(in_data['features'])):
             # discard a feature without its feature property
-            if len(in_data['features'][index]['properties']) != 0:
-                road_data.append([in_data['features'][index]['geometry']['type'], in_data['features'][index]['geometry']['coordinates']])
+            if len(in_data['features'][geometry_index]['properties']) != 0:
+                road_data.append([in_data['features'][geometry_index]['geometry']['type'],
+                                  in_data['features'][geometry_index]['geometry']['coordinates']])
 
         # calculate the number of counts within a grid giving the road data
-        for index2 in range(len(road_data)):
-            if road_data[index2][0] == 'LineString':
-                np_array = np.array(road_data[index2][1])
+        for data_index in range(len(road_data)):
+            if road_data[data_index][0] == 'LineString':
+                np_array = np.array(road_data[data_index][1])
                 tmp_array = np.zeros(len(in_grids))
 
                 # iterate through all grids
-                for ind in range(len(in_grids)):
+                for grid_array_ind in range(len(in_grids)):
                     for coordinate_ind in range(np_array.shape[0]):
-                        if in_grids[ind][3] == initial_bb[3] and in_grids[ind][2] == initial_bb[2]:
-                            if (np_array[coordinate_ind, :][0] >= in_grids[ind][0] and np_array[coordinate_ind, :][0] <= in_grids[ind][2] and
-                                np_array[coordinate_ind, :][1] >= in_grids[ind][1] and np_array[coordinate_ind, :][1] <= in_grids[ind][3]):
-                                tmp_array[ind] += 1
-                        elif in_grids[ind][3] == initial_bb[3] and in_grids[ind][2] != initial_bb[2]:
-                            if (np_array[coordinate_ind, :][0] >= in_grids[ind][0] and np_array[coordinate_ind, :][0] < in_grids[ind][2] and
-                                np_array[coordinate_ind, :][1] >= in_grids[ind][1] and np_array[coordinate_ind, :][1] <= in_grids[ind][3]):
-                                tmp_array[ind] += 1
-                        elif in_grids[ind][3] != initial_bb[3] and in_grids[ind][2] == initial_bb[2]:
-                            if (np_array[coordinate_ind, :][0] >= in_grids[ind][0] and np_array[coordinate_ind, :][0] <= in_grids[ind][2] and
-                                np_array[coordinate_ind, :][1] >= in_grids[ind][1] and np_array[coordinate_ind, :][1] < in_grids[ind][3]):
-                                tmp_array[ind] += 1
-                        elif in_grids[ind][3] != initial_bb[3] and in_grids[ind][2] != initial_bb[2]:
-                            if (np_array[coordinate_ind, :][0] >= in_grids[ind][0] and np_array[coordinate_ind, :][0] < in_grids[ind][2] and
-                                np_array[coordinate_ind, :][1] >= in_grids[ind][1] and np_array[coordinate_ind, :][1] < in_grids[ind][3]):
-                                tmp_array[ind] += 1                
+                        if in_grids[grid_array_ind][3] == initial_bb[3] and in_grids[grid_array_ind][2] == initial_bb[2]:
+                            if (np_array[coordinate_ind, :][0] >= in_grids[grid_array_ind][0] and
+                                np_array[coordinate_ind, :][0] <= in_grids[grid_array_ind][2] and
+                                np_array[coordinate_ind, :][1] >= in_grids[grid_array_ind][1] and
+                                np_array[coordinate_ind, :][1] <= in_grids[grid_array_ind][3]):
+                                tmp_array[grid_array_ind] += 1
+                                
+                        elif in_grids[grid_array_ind][3] == initial_bb[3] and in_grids[grid_array_ind][2] != initial_bb[2]:
+                            if (np_array[coordinate_ind, :][0] >= in_grids[grid_array_ind][0] and
+                                np_array[coordinate_ind, :][0] < in_grids[grid_array_ind][2] and
+                                np_array[coordinate_ind, :][1] >= in_grids[grid_array_ind][1] and
+                                np_array[coordinate_ind, :][1] <= in_grids[grid_array_ind][3]):
+                                tmp_array[grid_array_ind] += 1
+                                
+                        elif in_grids[grid_array_ind][3] != initial_bb[3] and in_grids[grid_array_ind][2] == initial_bb[2]:
+                            if (np_array[coordinate_ind, :][0] >= in_grids[grid_array_ind][0] and
+                                np_array[coordinate_ind, :][0] <= in_grids[grid_array_ind][2] and
+                                np_array[coordinate_ind, :][1] >= in_grids[grid_array_ind][1] and
+                                np_array[coordinate_ind, :][1] < in_grids[grid_array_ind][3]):
+                                tmp_array[grid_array_ind] += 1
+                                
+                        elif in_grids[grid_array_ind][3] != initial_bb[3] and in_grids[grid_array_ind][2] != initial_bb[2]:
+                            if (np_array[coordinate_ind, :][0] >= in_grids[grid_array_ind][0] and
+                                np_array[coordinate_ind, :][0] < in_grids[grid_array_ind][2] and
+                                np_array[coordinate_ind, :][1] >= in_grids[grid_array_ind][1] and
+                                np_array[coordinate_ind, :][1] < in_grids[grid_array_ind][3]):
+                                tmp_array[grid_array_ind] += 1                
         
-                for ind2 in range(len(in_grids)):
-                    if tmp_array[ind2] > 0:
-                        road_counts_his[ind2] += 1
+                for grid_array_ind in range(len(in_grids)):
+                    if tmp_array[grid_array_ind] > 0:
+                        road_counts_his[grid_array_ind] += 1
         # ==========================================
         csv_matrix = []
         csv_matrix.append(['grid_id', 'err_roads', 'road_counts'])
-        for index in range(len(in_grids)):
-            csv_matrix.append([index + 1, in_counts[index], road_counts_his[index]])
+        for array_index in range(len(in_grids)):
+            csv_matrix.append([array_index + 1, in_counts[array_index], road_counts_his[array_index]])
         # write out a csv file
         util = Utility()
         util.csv_writer(csv_matrix, os.path.join(out_folder, 'road-' + os.path.basename(out_folder) + '.csv'))

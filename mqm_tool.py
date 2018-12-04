@@ -1,16 +1,34 @@
 import json
 import numpy as np
-import sys, os, csv
+import sys
+import os
+import csv
 from kd_tree import kdTree
 from utility import Utility
 from geoProcess import GeoProcessor
 import argparse
 import ast
 
-# Road counts
+
 def road_count(in_road, in_grids, in_counts, out_folder, initial_bb):
+    """ Road count function.
+
+    This function calculates the number of flagged features in all of the grids for a given road file.
+    
+    Args:
+        in_road: a road file.
+        in_grids: a collection of bounding boxes.
+        in_counts: a count list in which every entry stores the number of flagged features to each grid.
+        out_folder: a folder path.
+        initial_bb: an initial bounding box.
+        
+    """
     road_data = []
     road_counts_his = np.zeros(len(in_grids))
+    csv_matrix = []
+    csv_matrix.append(['grid_id', 'err_roads', 'road_counts'])
+
+    
     # load the Geo-json file and ignore other files
     if os.path.splitext(in_road)[1] == '.geojson':
         # open geojson files
@@ -65,15 +83,30 @@ def road_count(in_road, in_grids, in_counts, out_folder, initial_bb):
                     if tmp_array[grid_array_ind] > 0:
                         road_counts_his[grid_array_ind] += 1
         # ==========================================
-        csv_matrix = []
-        csv_matrix.append(['grid_id', 'err_roads', 'road_counts'])
         for array_index in range(len(in_grids)):
             csv_matrix.append([array_index + 1, in_counts[array_index], road_counts_his[array_index]])
+
         # write out a csv file
         util = Utility()
         util.csv_writer(csv_matrix, os.path.join(out_folder, 'road-' + os.path.basename(out_folder) + '.csv'))
-# =======================================
+        
+
 def get_argument():
+    """ Argument grabbing function.
+
+    This function grabs all of the arguments that the program needs.
+    
+    Returns:
+        args.folderPath: an input folder path.
+        args.maxDepth: a maximum tree depth.
+        output_folder: a result folder.
+        int(args.countNum): a count number for a stop condition in the first k-d tree.
+        float(args.gridPercent): a percetage value for grids.
+        max_count: a maximum count in the second k-d tree.
+        path: a path to a histogram folder.
+        geojson_path: a path to a geojson folder.
+        
+    """
     # declare arguments and variables
     parser = argparse.ArgumentParser()
     parser.add_argument('--folderPath', type = str, default='', help='path to an input folder')
@@ -86,17 +119,37 @@ def get_argument():
     path = 'histogram'
     geojson_path = 'geojson'
     output_folder = os.path.join(os.path.split(args.folderPath)[0], 'result')
+
     
     if args.maxCount:
         max_count = int(args.maxCount)
+
     
     return args.folderPath, args.maxDepth, output_folder, int(args.countNum), float(args.gridPercent), max_count, path, geojson_path
-# =======================================
+
+
 def stop_condition(count_zero_list, count_list, grid_percent, count_num, cell_num, out_distribution):
+    """ Stop condition function.
+
+    This function calculates the stop condition to the first k-d tree.
+
+    Args:
+        count_zero_list: a pair to the number of grids with zero flagged feature.
+        count_list: a list to the number of flagged features.
+        grid_percent: a percetage value for grids.
+        count_num: a count number for a stop condition in the first k-d tree.
+        cell_num: the number of keys in the dictionary.
+        out_distribution: a dictionary in which key and value represent the number of flagged features and counts, respectively.
+        
+    Returns:
+        stop_flag: a flag value that indicates
+        
+    """
     # varialbes
     smallest_max_count = 0
     smallest_max_count_ind = -1
     stop_flag = False
+
     
     # add zeon-count back to the count list and find a maximum count that is smaller than a threshold
     if count_zero_list:
@@ -104,9 +157,12 @@ def stop_condition(count_zero_list, count_list, grid_percent, count_num, cell_nu
     for ind, ele in enumerate(count_list):
         if ele > count_num:
             break
+        
         else:
             smallest_max_count = ele
             smallest_max_count_ind = ind
+
+    
     # check the stop condition
     if smallest_max_count_ind != -1:
         total_count_within_count_num = 0
@@ -116,6 +172,7 @@ def stop_condition(count_zero_list, count_list, grid_percent, count_num, cell_nu
         if not count_zero_list:  # the list is empty
             list_length = smallest_max_count_ind + 1
             total_grids = cell_num
+            
         else:
             list_length = smallest_max_count_ind + 2
             total_grids = cell_num + count_zero_list[1]
@@ -123,50 +180,107 @@ def stop_condition(count_zero_list, count_list, grid_percent, count_num, cell_nu
         for i in range(list_length):
             if count_list[i] == 0:
                 total_count_within_count_num += count_zero_list[1]
+                
             else:
                 total_count_within_count_num += out_distribution[count_list[i]]
         
         if (float(total_count_within_count_num / total_grids)) > grid_percent:
             stop_flag = True
-            
+    
+    
     return stop_flag
 
-# =======================================
+
 def extend_partition(depth_count, input_bounding_box, input_data, startId):
+    """ Extend partition function.
+
+    This function is to partition an initial extend to multiple grids.
+
+    Args:
+        depth_count: tree depth.
+        input_bounding_box: a bounding box.
+        input_data: a nested list that consists of important information.
+        startId: a start id.
+        
+    Returns:
+        bounding_box_collection: a collection of bounding boxes.
+        count_list: a count list in which every entry stores the number of flagged features to each grid.
+        gridid_collec: a collection of grid ids.
+        
+    """
     # build k-d tree
     tree_cons = kdTree(depth_count, input_bounding_box, input_data, startId)
     kd_tree= tree_cons.tree_building()
 
+    
     # get all the leaves given a K-D tree
     bounding_box_collection = tree_cons.get_leaves(kd_tree)
 
+    
     # get counts
     count_list, gridid_collec= tree_cons.counts_calculation()
 
+    
     return bounding_box_collection, count_list, gridid_collec
-# =======================================
+
+
 def directory_creation(result_folder_path, sub_folder, path, geojson_path):
+    """ Directory creation function.
+
+    This function is to make all of the directories that the program needs.
+
+    Args:
+        result_folder_path: a result folder.
+        sub_folder: a sub-folder inside the result folder.
+        path: a path to a histogram folder.
+        geojson_path: a path to a geojson folder.
+        
+    """
     if not os.path.exists(result_folder_path):
         sys.stderr.write('Create a result directory !! \n')
         os.makedirs(result_folder_path)
+        
     if not os.path.exists(os.path.join(sub_folder, path)):
         sys.stderr.write('Create a histogram directory !! \n')
         os.makedirs(os.path.join(sub_folder, path))
+        
     if not os.path.exists(os.path.join(sub_folder, geojson_path)):
         sys.stderr.write('Create a geojson directory !! \n')
         os.makedirs(os.path.join(sub_folder, geojson_path))
-# =======================================
+        
+
 def process_single_folder(input_folder, folder_path, maximum_level, count_num, grid_percent, max_count, path, geojson_path, flag_val, summary_table, folder_name):
+    """ Single folder process.
+
+    This function processes a single folder and runs a k-d tree algorithm.
+
+    Args:
+        input_folder: a folder name. 
+        folder_path: a folder path.
+        maximum_level: a maximum tree depth.
+        count_num: a count number for a stop condition in the first k-d tree.
+        grid_percent: a percetage value for grids.
+        max_count: a maximum count in the second k-d tree.
+        path: a path to a histogram folder.
+        geojson_path: a path to a geojson folder.
+        flag_val: a flag value.
+        summary_table: a summary table including check names and feature counts.
+        folder_name: a last folder name for a given folder path.
+        
+    """
     # read and parse all geoJson files
     geo_processor = GeoProcessor(input_folder)
     entire_data, out_BB, name_num = geo_processor.bounding_box_process()
     road_file = geo_processor.get_road_file()
     initial_area = geo_processor.get_initial_extend_area(out_BB)
     del geo_processor
+
     
     util = Utility()
     util.csv_writer(name_num, os.path.join(folder_path, os.path.basename(input_folder) + '.csv' ))
     del util
+
+    
     # perform the 1st k-d tree
     for depth_count in range(1, int(maximum_level) + 1):
         bb_collec, hist, _ = extend_partition(depth_count, out_BB, entire_data, 1)
@@ -191,7 +305,7 @@ def process_single_folder(input_folder, folder_path, maximum_level, count_num, g
             util.geojson_write(depth_count, bb_collec, os.path.join(folder_path, geojson_path), cell_num, grid_area,
                                None, 'tree_v1', hist, flag_val = True)
             del util
-            # ====================================
+            
             # perform the 2nd k-d tree
             if max_count != -1:                
                 new_grids_list = []
@@ -224,30 +338,38 @@ def process_single_folder(input_folder, folder_path, maximum_level, count_num, g
                                     new_grids_list.append(new_bb_collec[small_ind])
                                     new_counts_list.append(new_counts_collec[small_ind])
                                 break
-                    # ==============================
+                    
                     util = Utility()
                     # write out a Geojson file
                     util.geojson_write(depth_count, new_grids_list,
                                        os.path.join(folder_path, geojson_path), None, None, grid_ids, 'cascade-kdtree', new_counts_collec, flag_val = True)
                     del util
-                    # ====================================
+            
             # road counts
             if road_file:
                 road_count(road_file, bb_collec, hist, folder_path, out_BB)
             break
-        # ======================================
-# =======================================
+
+
 def main():
+    """ A main function.
+
+    This function is to parse all of the Geo-json files and perform all of the functions.
+    
+    """
     # get all arguments
     input_folder, maximum_level, folder_path, count_num, grid_percent, max_count, path, geojson_path = get_argument()
     flag_val = False
     summary_table = []
     summary_table.append(['name','flags','flagged_OSM_feature','totalArea','gridSize'])
+
     
     # get a sub-directory list
     util = Utility()
     folder_list = util.get_sub_directionaries(input_folder)
     del util
+
+    
     # iterate through all sub-directories
     for sub_folder in folder_list:
         directory_creation(folder_path, os.path.join(folder_path, os.path.split(sub_folder)[1]), path, geojson_path)
@@ -256,8 +378,14 @@ def main():
         process_single_folder(sub_folder, os.path.join(folder_path, os.path.split(sub_folder)[1]), maximum_level,
                               count_num, grid_percent, max_count, path, geojson_path, flag_val, summary_table,
                               os.path.split(sub_folder)[1])
+
+    
     # write out a summary table
     util = Utility()
     util.csv_writer(summary_table, os.path.join(folder_path, 'road-summary.csv'))
+
+    
 if __name__ == "__main__":
+    """ A function to call the main function.
+    """
     main()

@@ -18,26 +18,47 @@ class Utility:
     def __init__(self):
         """ The docstring of the __init__ method.
 
-        write out a blank line to standard error
+        The constructor of Utility class
         
         """
-        sys.stderr.write('\n')
-
+        
     def __del__(self):
         """ The doctring of the __del__ method.
 
-        write out a message of deleting Utility module to standard error
+        write out a message of delete Utility module. 
         
         """
-        sys.stderr.write("deling" + str(self) + '\n')
-    
-    def distribution_computation(self, name, input_histogram):
+        print('deling' + str(self))
+
+    def plot_histogram_figures(self, name, statistics_result, x_axis):
+        """ Plot histogram method.
+
+        This method plots count histograms.
+
+        Args:
+            name: a file path to an output histogram plot.
+            statistics_result: a dictionary in which key and value represent the number of flagged features and counts, respectively.
+            x_axis: a list to the number of flagged features.
+
+        Examples:
+            x-axis of the plot: (1) Counts (or other measurements) or (2) Number of Flagged Features.
+            y-axis of the plot: (1) # of cells that has that counts/value (Frequency) or (2) Number of Grids.
+            
+        """
+        # plot histograms
+        fig, ax = plt.subplots()
+        ax.bar(range(len(statistics_result)), list(statistics_result.values()), align='center')
+        plt.xticks((0, len(statistics_result) - 1), (x_axis[0], x_axis[len(statistics_result) - 1]))
+        plt.xlabel('Number of Flagged Features')
+        plt.ylabel('Number of Grids')
+        fig.savefig(name)
+        
+    def distribution_computation(self, input_histogram):
         """ Distribution computation method.
 
         This method calculates the probability distribution from object counts, and creaete a histogram and save it.
 
         Args:
-            name: a file path to an output histogram plot.
             input_histogram: a count list to geometries over all grids.
             
         Returns:
@@ -46,10 +67,6 @@ class Utility:
             count_0_pair: a pair to the number of grids with zero flagged feature.
             len(statistics_result): the number of keys in the dictionary.
             
-        Examples:
-            x-axis of the plot: (1) Counts (or other measurements) or (2) Number of Flagged Features.
-            y-axis of the plot: (1) # of cells that has that counts/value (Frequency) or (2) Number of Grids.
-        
         """
         # create X-axis and a histogram for a given input count array
         count_0_pair = []
@@ -59,16 +76,7 @@ class Utility:
             count_0_pair = [0, statistics_result[0]]
         statistics_result.pop(0, None)
         x_axis = list(statistics_result.keys())
-
-
-        # plot histograms
-        fig, ax = plt.subplots()
-        ax.bar(range(len(statistics_result)), list(statistics_result.values()), align='center')
-        plt.xticks((0, len(statistics_result) - 1), (x_axis[0], x_axis[len(statistics_result) - 1]))
-        plt.xlabel('Number of Flagged Features')
-        plt.ylabel('Number of Grids')
-        fig.savefig(name)
-
+        
         
         return statistics_result, x_axis, count_0_pair, len(statistics_result)
     
@@ -101,30 +109,25 @@ class Utility:
         """
         # declare variables
         file_path = ''
-        json_dic = {}
+        json_dic = {"type": "FeatureCollection"}
         feature_list = []
-        json_dic['type'] = 'FeatureCollection'
-
         
         # add all cells and counts into the feature list
         for index in range(len(input_counts)):
-            tmp_dic = {}
-            geometry_dic = {}
-            properties_dic = {}
-            geometry_dic['type'] = 'Polygon'
+            tmp_dic = {"type" : "Feature"}
+            geometry_dic = {"type": "Polygon"}
+            properties_dic = {"counts": input_counts[index]}
             geometry_dic['coordinates'] = [[ [bounding_box_collec[index][0],bounding_box_collec[index][1]],
                                          [bounding_box_collec[index][0],bounding_box_collec[index][3]],
                                          [bounding_box_collec[index][2],bounding_box_collec[index][3]],
                                          [bounding_box_collec[index][2],bounding_box_collec[index][1]] ]]
             
-            properties_dic['counts'] = input_counts[index]
             if flag_val:
                 if in_grid_ids is None:
                     properties_dic['gridId'] = index + 1
                 else:
                     properties_dic['gridId'] = in_grid_ids[index]
             
-            tmp_dic['type'] = 'Feature'
             tmp_dic['geometry'] = geometry_dic
             tmp_dic['properties'] = properties_dic
             feature_list.append(tmp_dic)

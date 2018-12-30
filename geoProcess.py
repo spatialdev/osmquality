@@ -204,8 +204,7 @@ class GeoProcessor:
         
         """
         folder_bounding_box_set = []
-        name_num_list = []
-        name_num_list.append(['Check_name', 'Counts'])
+        name_num_list = [['Check_name', 'Counts']]
         start_point = 0
         end_point = 0
 

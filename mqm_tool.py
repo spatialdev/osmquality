@@ -25,9 +25,8 @@ def road_count(in_road, in_grids, in_counts, out_folder, initial_bb):
     """
     road_data = []
     road_counts_his = np.zeros(len(in_grids))
-    csv_matrix = []
-    csv_matrix.append(['grid_id', 'err_roads', 'road_counts'])
-
+    csv_matrix = [['grid_id', 'err_roads', 'road_counts']]
+    
     
     # load the Geo-json file and ignore other files
     if os.path.splitext(in_road)[1] == '.geojson':
@@ -136,22 +135,27 @@ def stop_condition(count_zero_list, count_list, grid_percent, count_num, cell_nu
     Args:
         count_zero_list: a pair to the number of grids with zero flagged feature.
         count_list: a list to the number of flagged features.
-        grid_percent: a percetage value for grids.
+        grid_percent: a percentage value for grids.
         count_num: a count number for a stop condition in the first k-d tree.
         cell_num: the number of keys in the dictionary.
         out_distribution: a dictionary in which key and value represent the number of flagged features and counts, respectively.
         
     Returns:
-        stop_flag: a flag value that indicates
+        stop_flag: a flag value that indicates whether or not the stop condition is achieved.
+
+    Examples:
+        The stop condition is that the program calculates an area of counts less than count_num (default: 10), and
+        compares the area with the total area. The stop condition will be satisfied once a ratio of the area to the
+        total area is greater or equal to grid_percent (default: 0.9).
         
     """
-    # varialbes
+    # variables
     smallest_max_count = 0
     smallest_max_count_ind = -1
     stop_flag = False
 
     
-    # add zeon-count back to the count list and find a maximum count that is smaller than a threshold
+    # add zero-count back to the count list and find a maximum count that is smaller than a threshold
     if count_zero_list:
         count_list.insert(0, count_zero_list[0])
     for ind, ele in enumerate(count_list):
@@ -237,15 +241,15 @@ def directory_creation(result_folder_path, sub_folder, path, geojson_path):
         
     """
     if not os.path.exists(result_folder_path):
-        sys.stderr.write('Create a result directory !! \n')
+        print('Create a result directory !!')
         os.makedirs(result_folder_path)
         
     if not os.path.exists(os.path.join(sub_folder, path)):
-        sys.stderr.write('Create a histogram directory !! \n')
+        print('Create a histogram directory !!')
         os.makedirs(os.path.join(sub_folder, path))
         
     if not os.path.exists(os.path.join(sub_folder, geojson_path)):
-        sys.stderr.write('Create a geojson directory !! \n')
+        print('Create a geojson directory !!')
         os.makedirs(os.path.join(sub_folder, geojson_path))
         
 
@@ -292,13 +296,14 @@ def process_single_folder(input_folder, folder_path, maximum_level, count_num, g
         util = Utility()
         filename = os.path.join(os.path.join(folder_path, path), 'level-' + str(depth_count) + '.png')
         # probability distribution
-        out_distribution, count_list, count_zero_list, cell_num = util.distribution_computation(filename, hist)
+        out_distribution, count_list, count_zero_list, cell_num = util.distribution_computation(hist)
+        util.plot_histogram_figures(filename, out_distribution, count_list)
         # write out a Geojson file
         util.geojson_write(depth_count, bb_collec, os.path.join(folder_path, geojson_path), cell_num, grid_area, None, 'tree_v1', hist, flag_val)
 
         # stop condition (the over 90% (parameter) of cells is less than 10 (parameter) (the count value))
         if stop_condition(count_zero_list, count_list, grid_percent, count_num, cell_num, out_distribution):
-            # wirte out one row
+            # write out one row
             summary_table.append(util.summary_table_row_generation(entire_data, name_num, round(initial_area * 1e-6, 2), grid_area, folder_name))
 
             # write out a Geojson file
@@ -360,9 +365,8 @@ def main():
     # get all arguments
     input_folder, maximum_level, folder_path, count_num, grid_percent, max_count, path, geojson_path = get_argument()
     flag_val = False
-    summary_table = []
-    summary_table.append(['name','flags','flagged_OSM_feature','totalArea','gridSize'])
-
+    summary_table = [['name','flags','flagged_OSM_feature','totalArea','gridSize']]
+    
     
     # get a sub-directory list
     util = Utility()

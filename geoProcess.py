@@ -247,8 +247,8 @@ class GeoProcessor:
 
                             self.output_data.append([data['features'][geometry_index]['geometry']['type'],
                                                      data['features'][geometry_index]['geometry']['coordinates'], int_array[geometry_index],
-                                                     data['features'][geometry_index]['properties']['feature_properties'][0]['osmid'],   # here is a problem...
-                                                     data['features'][geometry_index]['properties']['feature_properties'][0]['ItemId'], f])   # here is a problem...
+                                                     data['features'][geometry_index]['properties']['feature_properties'][0]['osmid'],
+                                                     data['features'][geometry_index]['properties']['feature_properties'][0]['ItemId'], f])
 
                             geometry_bounding_box_list.append(geometry_bounding_box)
                     

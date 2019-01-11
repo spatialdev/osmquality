@@ -38,16 +38,39 @@ The program yields two types of results: histograms and geojson files.
 #### Running the test suite
 
 MQM uses [tox](https://tox.readthedocs.io/en/latest/) and [pytest](https://docs.pytest.org/en/latest/index.html) to test. 
-In order to run the test suite, make sure you have tox installed. If it is not installed, you can get it from `pip`:
-```
-pip install tox
-```
-Note that you can run this from inside a virtual environment, as long as that environment is active whenever you run
-your tests.
 
-After tox is set up, you can type:
+We also use `pipenv` to manage our developer environment, keeping it consistent across a variety of machines and local
+python environments.
+
+First, install `pipenv`:
+```
+pip install pipenv
+```
+
+Then, initialize a virtual environment for this project:
+```
+pipenv install --dev
+```
+
+After that, start a `pipenv` shell:
+```
+pipenv shell
+```
+
+Now, referencing `python` uses the developer python environment. We can run tests by simply typing:
 ```
 tox
 ```
 
-from the root folder, and the tests will run.
+To exit out of the virtual environment, type:
+```
+exit
+```
+
+### Troubleshooting
+
+There is a bug with [certain versions of pip and pipenv](https://github.com/pypa/pipenv/issues/2924#issuecomment-427351356p).
+If you find yourself running into errors like `TypeError: 'module' object is not callable`, try upgrading pipenv:
+```
+pip install --upgrade pipenv
+```

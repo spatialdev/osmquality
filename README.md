@@ -32,3 +32,22 @@ and the number of counts.
 
 **Result:** <br />
 The program yields two types of results: histograms and geojson files.
+
+# Testing
+
+#### Running the test suite
+
+MQM uses [tox](https://tox.readthedocs.io/en/latest/) and [pytest](https://docs.pytest.org/en/latest/index.html) to test. 
+In order to run the test suite, make sure you have tox installed. If it is not installed, you can get it from `pip`:
+```
+pip install tox
+```
+Note that you can run this from inside a virtual environment, as long as that environment is active whenever you run
+your tests.
+
+After tox is set up, you can type:
+```
+tox
+```
+
+from the root folder, and the tests will run.

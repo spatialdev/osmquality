@@ -1,0 +1,15 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[dev-packages]
+tox = "*"
+
+[packages]
+matplotlib = "~=3.0.2"
+area = "~=1.1.1"
+numpy = "~=1.15.4"
+
+[requires]
+python_version = "3.7"

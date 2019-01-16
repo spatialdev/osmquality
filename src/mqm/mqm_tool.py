@@ -3,9 +3,9 @@ import numpy as np
 import sys
 import os
 import csv
-from kd_tree import kdTree
-from utility import Utility
-from geoProcess import GeoProcessor
+from .kd_tree import kdTree
+from .utility import Utility
+from .geo_process import GeoProcessor
 import argparse
 import ast
 

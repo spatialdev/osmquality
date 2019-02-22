@@ -22,7 +22,7 @@ pipenv shell
 2. run the program through applying <br />
 
 ```
-python3 mqm_tool.py --folderPath [a absolute folder path] --maxDepth [maximum tree depth (default = 10)]
+python3 -m src.mqm --folderPath [a absolute folder path] --maxDepth [maximum tree depth (default = 10)]
 --countNum [a count number (default = 10)] --gridPercent [a grid percentage (default = 0.9)]
 --maxCount [maximum count to the second k-d tree]
 

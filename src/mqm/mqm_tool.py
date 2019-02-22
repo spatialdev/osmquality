@@ -371,7 +371,8 @@ def main():
     # get a sub-directory list
     util = Utility()
     folder_list = util.get_sub_directionaries(input_folder)
-    del util
+    if len(folder_list) == 0:
+        folder_list.append(input_folder)
 
     
     # iterate through all sub-directories

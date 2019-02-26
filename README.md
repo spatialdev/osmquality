@@ -4,9 +4,11 @@ OpenStreetMap (OSM) data quality is always a concern and frequently a barrier fo
 
 # Usage
 
+Eventually, this project will be on PyPI, which will make the following steps only necessary for development.
+
 **Installing dependencies**
 
-To utilize the MQM tool, please install Python3 and `pipenv`. Then, run the following command to install all of the dependencies: <br />
+To run the MQM tool from source, please install Python3 and `pipenv`. Then, run the following command to install all of the dependencies: <br />
 ```
 pipenv install
 ```
@@ -22,12 +24,12 @@ pipenv shell
 2. run the program through applying <br />
 
 ```
-python3 -m src.mqm --folderPath [a absolute folder path] --maxDepth [maximum tree depth (default = 10)]
+python3 -m mqm --folderPath [a absolute folder path] --maxDepth [maximum tree depth (default = 10)]
 --countNum [a count number (default = 10)] --gridPercent [a grid percentage (default = 0.9)]
 --maxCount [maximum count to the second k-d tree]
 
 For example:
-python3 mqm_tool.py --folderPath ~/desktop/program/test_data 
+python3 -m mqm --folderPath ~/desktop/program/test_data
 ```
 
 Note:

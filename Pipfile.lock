@@ -84,6 +84,10 @@
             "index": "pypi",
             "version": "==3.0.2"
         },
+        "mqm": {
+            "editable": true,
+            "path": "."
+        },
         "numpy": {
             "hashes": [
                 "sha256:0df89ca13c25eaa1621a3f09af4c8ba20da849692dcae184cb55e80952c453fb",

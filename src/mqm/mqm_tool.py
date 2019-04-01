@@ -364,8 +364,7 @@ def main():
         folder_list.append(input_folder)
 
     # iterate through all sub-directories
-    for sub_folder in folder_list:
-        print(sub_folder)
+    for sub_folder in folder_list: 
         directory_creation(folder_path, os.path.join(folder_path, os.path.split(sub_folder)[1]), path, geojson_path)
 
         # process single sub-folder

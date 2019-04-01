@@ -26,7 +26,8 @@ def road_count(in_road, in_grids, in_counts, out_folder, initial_bb):
     road_data = []
     road_counts_his = np.zeros(len(in_grids))
     csv_matrix = [['grid_id', 'err_roads', 'road_counts']]
-
+    
+    
     # load the Geo-json file and ignore other files
     if os.path.splitext(in_road)[1] == '.geojson':
         # open geojson files
@@ -107,22 +108,23 @@ def get_argument():
     """
     # declare arguments and variables
     parser = argparse.ArgumentParser()
-    parser.add_argument('--folderPath', type=str, default='', help='path to an input folder')
-    parser.add_argument('--maxDepth', type=str, default='10', help='max depth of a k-d tree')
-    parser.add_argument('--countNum', type=str, default='10', help='a count value for a stop condition')
-    parser.add_argument('--gridPercent', type=str, default='0.9', help='a grid percentage')
-    parser.add_argument('--maxCount', type=str, default='', help='maximum count to the second k-d tree')
+    parser.add_argument('--folderPath', type = str, default='', help='path to an input folder')
+    parser.add_argument('--maxDepth', type = str, default='10', help='max depth of a k-d tree')
+    parser.add_argument('--countNum', type = str, default='10', help='a count value for a stop condition')
+    parser.add_argument('--gridPercent', type = str, default='0.9', help='a grid percentage')
+    parser.add_argument('--maxCount', type = str, default='', help='maximum count to the second k-d tree')
     args = parser.parse_args()
     max_count = -1
     path = 'histogram'
     geojson_path = 'geojson'
-    folder_path = os.path.normpath(args.folderPath)
-    output_folder = os.path.join(os.path.split(folder_path)[0], 'result')
+    output_folder = os.path.join(os.path.split(args.folderPath)[0], 'result')
 
+    
     if args.maxCount:
         max_count = int(args.maxCount)
 
-    return folder_path, args.maxDepth, output_folder, int(args.countNum), float(args.gridPercent), max_count, path, geojson_path
+    
+    return args.folderPath, args.maxDepth, output_folder, int(args.countNum), float(args.gridPercent), max_count, path, geojson_path
 
 
 def stop_condition(count_zero_list, count_list, grid_percent, count_num, cell_num, out_distribution):
@@ -152,6 +154,7 @@ def stop_condition(count_zero_list, count_list, grid_percent, count_num, cell_nu
     smallest_max_count_ind = -1
     stop_flag = False
 
+    
     # add zero-count back to the count list and find a maximum count that is smaller than a threshold
     if count_zero_list:
         count_list.insert(0, count_zero_list[0])
@@ -163,6 +166,7 @@ def stop_condition(count_zero_list, count_list, grid_percent, count_num, cell_nu
             smallest_max_count = ele
             smallest_max_count_ind = ind
 
+    
     # check the stop condition
     if smallest_max_count_ind != -1:
         total_count_within_count_num = 0
@@ -186,7 +190,8 @@ def stop_condition(count_zero_list, count_list, grid_percent, count_num, cell_nu
         
         if (float(total_count_within_count_num / total_grids)) > grid_percent:
             stop_flag = True
-
+    
+    
     return stop_flag
 
 
@@ -209,14 +214,17 @@ def extend_partition(depth_count, input_bounding_box, input_data, startId):
     """
     # build k-d tree
     tree_cons = kdTree(depth_count, input_bounding_box, input_data, startId)
-    kd_tree = tree_cons.tree_building()
+    kd_tree= tree_cons.tree_building()
 
+    
     # get all the leaves given a K-D tree
     bounding_box_collection = tree_cons.get_leaves(kd_tree)
 
+    
     # get counts
-    count_list, gridid_collec = tree_cons.counts_calculation()
+    count_list, gridid_collec= tree_cons.counts_calculation()
 
+    
     return bounding_box_collection, count_list, gridid_collec
 
 
@@ -271,10 +279,12 @@ def process_single_folder(input_folder, folder_path, maximum_level, count_num, g
     initial_area = geo_processor.get_initial_extend_area(out_BB)
     del geo_processor
 
+    
     util = Utility()
-    util.csv_writer(name_num, os.path.join(folder_path, os.path.basename(input_folder) + '.csv'))
+    util.csv_writer(name_num, os.path.join(folder_path, os.path.basename(input_folder) + '.csv' ))
     del util
 
+    
     # perform the 1st k-d tree
     for depth_count in range(1, int(maximum_level) + 1):
         bb_collec, hist, _ = extend_partition(depth_count, out_BB, entire_data, 1)
@@ -357,21 +367,24 @@ def main():
     flag_val = False
     summary_table = [['name','flags','flagged_OSM_feature','totalArea','gridSize']]
     
+    
     # get a sub-directory list
     util = Utility()
     folder_list = util.get_sub_directionaries(input_folder)
     if len(folder_list) == 0:
         folder_list.append(input_folder)
 
+    
     # iterate through all sub-directories
-    for sub_folder in folder_list: 
+    for sub_folder in folder_list:
         directory_creation(folder_path, os.path.join(folder_path, os.path.split(sub_folder)[1]), path, geojson_path)
-
+        
         # process single sub-folder
         process_single_folder(sub_folder, os.path.join(folder_path, os.path.split(sub_folder)[1]), maximum_level,
                               count_num, grid_percent, max_count, path, geojson_path, flag_val, summary_table,
                               os.path.split(sub_folder)[1])
 
+    
     # write out a summary table
     util = Utility()
     util.csv_writer(summary_table, os.path.join(folder_path, 'road-summary.csv'))

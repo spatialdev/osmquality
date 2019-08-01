@@ -177,7 +177,7 @@ class GeoProcessor:
                 for arry_ind in range(len(geometries_list[geometry_collec_index]['coordinates'])):
                     if len(ids_list[id_count_index + arry_ind]) != 0:
                         output_list.append([type_name, geometries_list[geometry_collec_index]['coordinates'][arry_ind], flag,
-                                            ids_list[id_count_index + arry_ind]['osmid'], ids_list[id_count_index + arry_ind]['ItemId'],
+                                            ids_list[id_count_index + arry_ind]['osmIdentifier'], ids_list[id_count_index + arry_ind]['identifier'],
                                             file_name])
                 
                 id_count_index += len(geometries_list[geometry_collec_index]['coordinates'])
@@ -185,7 +185,7 @@ class GeoProcessor:
             else: # a point, a line, a polygon, or a multi-polygon
                 if len(ids_list[id_count_index]) != 0:
                     output_list.append([geometries_list[geometry_collec_index]['type'], geometries_list[geometry_collec_index]['coordinates'], flag,
-                                        ids_list[id_count_index]['osmid'], ids_list[id_count_index]['ItemId'], file_name])
+                                        ids_list[id_count_index]['osmIdentifier'], ids_list[id_count_index]['identifier'], file_name])
                 id_count_index += 1
         # =================================================
 
@@ -247,8 +247,8 @@ class GeoProcessor:
 
                             self.output_data.append([data['features'][geometry_index]['geometry']['type'],
                                                      data['features'][geometry_index]['geometry']['coordinates'], int_array[geometry_index],
-                                                     data['features'][geometry_index]['properties']['feature_properties'][0]['osmid'],
-                                                     data['features'][geometry_index]['properties']['feature_properties'][0]['ItemId'], f])
+                                                     data['features'][geometry_index]['properties']['feature_properties'][0]['osmIdentifier'],
+                                                     data['features'][geometry_index]['properties']['feature_properties'][0]['identifier'], f])
 
                             geometry_bounding_box_list.append(geometry_bounding_box)
                     

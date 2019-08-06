@@ -18,7 +18,7 @@ class GeoProcessor:
     
     """
     
-    def __init__(self, input_folder_path, boundary):
+    def __init__(self, input_folder_path):
         """ The docstring of the __init__ method.
 
         Args:
@@ -26,7 +26,6 @@ class GeoProcessor:
             
         """
         self.folder_path = input_folder_path
-        self.boundary_file = boundary
 
         #: list of list: a nested list with some important information.
         self.output_data = []
@@ -262,9 +261,9 @@ class GeoProcessor:
 
         
         # get a folder bounding box giving one or more fix bounding box, or a boundary file
-        if self.boundary_file != '':
+        if "boundary.json" in os.listdir(self.folder_path):
             try:
-                with open(self.boundary_file) as bounds_file:
+                with open(os.path.join(self.folder_path, "boundary.json")) as bounds_file:
                     feature = json.loads(bounds_file.read())["features"][0]["geometry"]
                 final_bounding_box = self.min_max_calculation(feature["type"], feature["coordinates"])
             except Exception:

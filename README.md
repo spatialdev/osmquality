@@ -26,7 +26,7 @@ pipenv shell
 ```
 python3 -m mqm --folderPath [a absolute folder path] --maxDepth [maximum tree depth (default = 10)]
 --countNum [a count number (default = 10)] --gridPercent [a grid percentage (default = 0.9)]
---maxCount [maximum count to the second k-d tree] --boundary [a geojson feature, output bbox will match feature's]
+--maxCount [maximum count to the second k-d tree]
 
 For example:
 python3 -m mqm --folderPath ~/desktop/program/test_data
@@ -36,6 +36,8 @@ Note:
 
 1. Users can adjust all parameters, and minimum value of the depth number is 1.<br />
 2. When users specify the maximum count to the second k-d tree, the tool performs the second tree automatically. <br />
+3. If you add a geojson file name 'boundary.json' to any of the sub-directories of the input folder, the bounding box 
+of the first feature in that file will be used as the bounding box of the folders results.
 
 **Output Format:**
 

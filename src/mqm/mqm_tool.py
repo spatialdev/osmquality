@@ -112,6 +112,7 @@ def get_argument():
     parser.add_argument('--countNum', type=str, default='10', help='a count value for a stop condition')
     parser.add_argument('--gridPercent', type=str, default='0.9', help='a grid percentage')
     parser.add_argument('--maxCount', type=str, default='', help='maximum count to the second k-d tree')
+    parser.add_argument('--boundary', type=str, default='', help='geojson polygon to use for the output extent')
     args = parser.parse_args()
     max_count = -1
     path = 'histogram'
@@ -122,7 +123,7 @@ def get_argument():
     if args.maxCount:
         max_count = int(args.maxCount)
 
-    return folder_path, args.maxDepth, output_folder, int(args.countNum), float(args.gridPercent), max_count, path, geojson_path
+    return folder_path, args.maxDepth, output_folder, int(args.countNum), float(args.gridPercent), max_count, path, geojson_path, args.boundary
 
 
 def stop_condition(count_zero_list, count_list, grid_percent, count_num, cell_num, out_distribution):
@@ -245,7 +246,7 @@ def directory_creation(result_folder_path, sub_folder, path, geojson_path):
         os.makedirs(os.path.join(sub_folder, geojson_path))
         
 
-def process_single_folder(input_folder, folder_path, maximum_level, count_num, grid_percent, max_count, path, geojson_path, flag_val, summary_table, folder_name):
+def process_single_folder(input_folder, folder_path, maximum_level, count_num, grid_percent, max_count, path, geojson_path, flag_val, summary_table, folder_name, boundary):
     """ Single folder process.
 
     This function processes a single folder and runs a k-d tree algorithm.
@@ -265,7 +266,7 @@ def process_single_folder(input_folder, folder_path, maximum_level, count_num, g
         
     """
     # read and parse all geoJson files
-    geo_processor = GeoProcessor(input_folder)
+    geo_processor = GeoProcessor(input_folder, boundary)
     entire_data, out_BB, name_num = geo_processor.bounding_box_process()
     road_file = geo_processor.get_road_file()
     initial_area = geo_processor.get_initial_extend_area(out_BB)
@@ -353,7 +354,7 @@ def main():
     
     """
     # get all arguments
-    input_folder, maximum_level, folder_path, count_num, grid_percent, max_count, path, geojson_path = get_argument()
+    input_folder, maximum_level, folder_path, count_num, grid_percent, max_count, path, geojson_path, boundary = get_argument()
     flag_val = False
     summary_table = [['name','flags','flagged_OSM_feature','totalArea','gridSize']]
     
@@ -370,7 +371,7 @@ def main():
         # process single sub-folder
         process_single_folder(sub_folder, os.path.join(folder_path, os.path.split(sub_folder)[1]), maximum_level,
                               count_num, grid_percent, max_count, path, geojson_path, flag_val, summary_table,
-                              os.path.split(sub_folder)[1])
+                              os.path.split(sub_folder)[1], boundary)
 
     # write out a summary table
     util = Utility()

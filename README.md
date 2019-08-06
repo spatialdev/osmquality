@@ -26,7 +26,7 @@ pipenv shell
 ```
 python3 -m mqm --folderPath [a absolute folder path] --maxDepth [maximum tree depth (default = 10)]
 --countNum [a count number (default = 10)] --gridPercent [a grid percentage (default = 0.9)]
---maxCount [maximum count to the second k-d tree]
+--maxCount [maximum count to the second k-d tree] --boundary [a geojson feature, output bbox will match feature's]
 
 For example:
 python3 -m mqm --folderPath ~/desktop/program/test_data

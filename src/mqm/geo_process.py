@@ -260,8 +260,17 @@ class GeoProcessor:
                 start_point = len(data['features'])
 
         
-        # get a folder bounding box giving one or more fix bounding box
-        final_bounding_box = self.final_bounding_box_generation(folder_bounding_box_set, 4)
+        # get a folder bounding box giving one or more fix bounding box, or a boundary file
+        if "boundary.json" in os.listdir(self.folder_path):
+            try:
+                with open(os.path.join(self.folder_path, "boundary.json")) as bounds_file:
+                    feature = json.loads(bounds_file.read())["features"][0]["geometry"]
+                final_bounding_box = self.min_max_calculation(feature["type"], feature["coordinates"])
+            except Exception:
+                print("Error reading the boundary file.")
+                raise
+        else:
+            final_bounding_box = self.final_bounding_box_generation(folder_bounding_box_set, 4)
 
         
         return self.output_data, final_bounding_box, name_num_list

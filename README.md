@@ -36,6 +36,8 @@ Note:
 
 1. Users can adjust all parameters, and minimum value of the depth number is 1.<br />
 2. When users specify the maximum count to the second k-d tree, the tool performs the second tree automatically. <br />
+3. If you add a geojson file name 'boundary.json' to any of the sub-directories of the input folder, the bounding box 
+of the first feature in that file will be used as the bounding box of the folders results.
 
 **Output Format:**
 

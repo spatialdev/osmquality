@@ -8,6 +8,8 @@ from .utility import Utility
 from .geo_process import GeoProcessor
 import argparse
 import gzip
+from pathlib import Path
+from zipfile import ZipFile
 import ast
 
 
@@ -119,8 +121,13 @@ def get_argument():
     path = 'histogram'
     geojson_path = 'geojson'
     folder_path = os.path.normpath(args.input)
-    if os.path.splitext(folder_path)[-1] == '.gz':
-        folder_path = gzip.decompress(folder_path)
+    ext = os.path.splitext(folder_path)[1]
+    if ext == '.gz':
+        folder_path = gzip.open(folder_path, 'r')
+    elif ext == '.zip':
+        ext_path = os.path.splitext(folder_path)[0]
+        ZipFile(folder_path, 'r').extractall(os.path.dirname(ext_path))
+        folder_path = ext_path
     output_folder = os.path.normpath(args.output)
 
     if args.maxCount:

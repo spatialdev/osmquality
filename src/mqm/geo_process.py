@@ -4,6 +4,7 @@ import sys
 import os
 from area import area
 from .utility import Utility
+import gzip
 import argparse
 
 
@@ -217,8 +218,11 @@ class GeoProcessor:
                     name_num_list.append([os.path.splitext(f)[0].split('-')[0], int(os.path.splitext(f)[0].split('-')[2])])
 
                 # open geojson files
-                with open(os.path.join(self.folder_path, f), encoding='utf-8') as new_f:
-                    data = json.load(new_f)
+                if os.path.splitext(os.path.join(self.folder_path, f))[-1] == '.gz':
+                    new_f = gzip.open(os.path.join(self.folder_path, f), encoding='utf-8')
+                else:
+                    new_f = open(os.path.join(self.folder_path, f), encoding='utf-8')
+                data = json.load(new_f)
 
                 # randomly generate unique integers (flag ids)
                 end_point = start_point + len(data['features'])

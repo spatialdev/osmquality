@@ -121,13 +121,10 @@ def get_argument():
     path = 'histogram'
     geojson_path = 'geojson'
     folder_path = os.path.normpath(args.input)
-    ext = os.path.splitext(folder_path)[1]
-    if ext == '.gz':
-        folder_path = gzip.open(folder_path, 'r')
-    elif ext == '.zip':
+    if os.path.splitext(folder_path)[1] == '.zip':
         ext_path = os.path.splitext(folder_path)[0]
-        ZipFile(folder_path, 'r').extractall(os.path.dirname(ext_path))
-        folder_path = ext_path
+        ZipFile(folder_path, 'r').extractall('temp')
+        folder_path = 'temp'
     output_folder = os.path.normpath(args.output)
 
     if args.maxCount:
@@ -281,10 +278,6 @@ def process_single_folder(input_folder, folder_path, maximum_level, count_num, g
     road_file = geo_processor.get_road_file()
     initial_area = geo_processor.get_initial_extend_area(out_BB)
     del geo_processor
-
-    util = Utility()
-    util.csv_writer(name_num, os.path.join(folder_path, os.path.basename(input_folder) + '.csv'))
-    del util
 
     # perform the 1st k-d tree
     for depth_count in range(1, int(maximum_level) + 1):

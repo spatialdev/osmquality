@@ -7,6 +7,7 @@ from .kd_tree import kdTree
 from .utility import Utility
 from .geo_process import GeoProcessor
 import argparse
+import gzip
 import ast
 
 
@@ -95,7 +96,7 @@ def get_argument():
     This function grabs all of the arguments that the program needs.
     
     Returns:
-        args.folderPath: an input folder path.
+        folder_path: an input folder path.
         args.maxDepth: a maximum tree depth.
         output_folder: a result folder.
         int(args.countNum): a count number for a stop condition in the first k-d tree.
@@ -107,17 +108,20 @@ def get_argument():
     """
     # declare arguments and variables
     parser = argparse.ArgumentParser()
-    parser.add_argument('--folderPath', type=str, default='', help='path to an input folder')
+    parser.add_argument('--input', type=str, default='', help='path to an input folder')
     parser.add_argument('--maxDepth', type=str, default='10', help='max depth of a k-d tree')
     parser.add_argument('--countNum', type=str, default='10', help='a count value for a stop condition')
     parser.add_argument('--gridPercent', type=str, default='0.9', help='a grid percentage')
     parser.add_argument('--maxCount', type=str, default='', help='maximum count to the second k-d tree')
+    parser.add_argument('--output', type=str, help='path to an output folder')
     args = parser.parse_args()
     max_count = -1
     path = 'histogram'
     geojson_path = 'geojson'
-    folder_path = os.path.normpath(args.folderPath)
-    output_folder = os.path.join(os.path.split(folder_path)[0], 'result')
+    folder_path = os.path.normpath(args.input)
+    if os.path.splitext(folder_path)[-1] == '.gz':
+        folder_path = gzip.decompress(folder_path)
+    output_folder = os.path.normpath(args.output)
 
     if args.maxCount:
         max_count = int(args.maxCount)

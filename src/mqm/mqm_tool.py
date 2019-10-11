@@ -123,8 +123,10 @@ def get_argument():
     folder_path = os.path.normpath(args.input)
     if os.path.splitext(folder_path)[1] == '.zip':
         ext_path = os.path.splitext(folder_path)[0]
-        ZipFile(folder_path, 'r').extractall('temp')
-        folder_path = 'temp'
+        ZipFile(folder_path, 'r').extractall(ext_path)
+        folder_path = ext_path
+    if not args.output:
+        sys.exit('Error: Output argument is required')
     output_folder = os.path.normpath(args.output)
 
     if args.maxCount:
@@ -368,13 +370,14 @@ def main():
         folder_list.append(input_folder)
 
     # iterate through all sub-directories
-    for sub_folder in folder_list: 
-        directory_creation(folder_path, os.path.join(folder_path, os.path.split(sub_folder)[1]), path, geojson_path)
+    for sub_folder in folder_list:
+        if '__MACOSX' not in sub_folder:
+            directory_creation(folder_path, os.path.join(folder_path, os.path.split(sub_folder)[1]), path, geojson_path)
 
-        # process single sub-folder
-        process_single_folder(sub_folder, os.path.join(folder_path, os.path.split(sub_folder)[1]), maximum_level,
-                              count_num, grid_percent, max_count, path, geojson_path, flag_val, summary_table,
-                              os.path.split(sub_folder)[1])
+            # process single sub-folder
+            process_single_folder(sub_folder, os.path.join(folder_path, os.path.split(sub_folder)[1]), maximum_level,
+                                  count_num, grid_percent, max_count, path, geojson_path, flag_val, summary_table,
+                                  os.path.split(sub_folder)[1])
 
     # write out a summary table
     util = Utility()

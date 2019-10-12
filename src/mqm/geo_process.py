@@ -212,15 +212,20 @@ class GeoProcessor:
         
         # loop through all geojson files
         for f in os.listdir(self.folder_path):
+            print(f)
             # load the Geo-json file and ignore other files
-            if (((os.path.splitext(os.path.join(self.folder_path, f))[1] == '.geojson') and not
-                            os.path.join(self.folder_path, f).startswith('.'))):
+            if (('geojson' in (os.path.join(self.folder_path, f)).split('.')) and not
+            ((f)).startswith('.')):
                 if len(os.path.splitext(f)[0].split('-')) == 3:    # pull out this function
-                    name_num_list.append([os.path.splitext(f)[0].split('-')[0], int(os.path.splitext(f)[0].split('-')[2])])
+                    if os.path.splitext(os.path.join(self.folder_path, f))[1] == '.gz':
+                        name_num_list.append([os.path.splitext(f)[0].split('-')[0], int((os.path.splitext(f)[0].split('-')[2]).split('.')[0])])
+                    else:
+                        name_num_list.append([os.path.splitext(f)[0].split('-')[0], (int(os.path.splitext(f)[0].split('-')[2]))])
+                print(name_num_list)
 
                 # open geojson files
-                if os.path.splitext(os.path.join(self.folder_path, f))[-1] == '.gz':
-                    new_f = gzip.open(os.path.join(self.folder_path, f), encoding='utf-8')
+                if os.path.splitext(os.path.join(self.folder_path, f))[1] == '.gz':
+                    new_f = gzip.open(os.path.join(self.folder_path, f))
                 else:
                     new_f = open(os.path.join(self.folder_path, f), encoding='utf-8')
                 data = json.load(new_f)

@@ -213,7 +213,8 @@ class GeoProcessor:
         # loop through all geojson files
         for f in os.listdir(self.folder_path):
             # load the Geo-json file and ignore other files
-            if os.path.splitext(os.path.join(self.folder_path, f))[1] == '.geojson':
+            if (((os.path.splitext(os.path.join(self.folder_path, f))[1] == '.geojson') and not
+                            os.path.join(self.folder_path, f).startswith('.'))):
                 if len(os.path.splitext(f)[0].split('-')) == 3:    # pull out this function
                     name_num_list.append([os.path.splitext(f)[0].split('-')[0], int(os.path.splitext(f)[0].split('-')[2])])
 

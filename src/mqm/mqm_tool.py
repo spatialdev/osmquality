@@ -121,10 +121,14 @@ def get_argument():
     path = 'histogram'
     geojson_path = 'geojson'
     folder_path = os.path.normpath(args.input)
-    if os.path.splitext(folder_path)[1] == '.zip':
-        ext_path = os.path.splitext(folder_path)[0]
-        ZipFile(folder_path, 'r').extractall(ext_path)
-        folder_path = ext_path
+
+    # Check input file structure to ensure only geojson files are stored in each subdirectory of the input directory
+    for item in Path(folder_path).glob('*/*'):
+        print(item.name.split('.'))
+        if 'geojson' not in item.name.split('.') and not item.name.startswith('.'):
+            sys.exit('Error: Directory must have the format Directory>Country>GeoJSONFile.geojson')
+
+    # Require output path
     if not args.output:
         sys.exit('Error: Output argument is required')
     output_folder = os.path.normpath(args.output)
@@ -371,13 +375,12 @@ def main():
 
     # iterate through all sub-directories
     for sub_folder in folder_list:
-        if '__MACOSX' not in sub_folder:
-            directory_creation(folder_path, os.path.join(folder_path, os.path.split(sub_folder)[1]), path, geojson_path)
+        directory_creation(folder_path, os.path.join(folder_path, os.path.split(sub_folder)[1]), path, geojson_path)
 
-            # process single sub-folder
-            process_single_folder(sub_folder, os.path.join(folder_path, os.path.split(sub_folder)[1]), maximum_level,
-                                  count_num, grid_percent, max_count, path, geojson_path, flag_val, summary_table,
-                                  os.path.split(sub_folder)[1])
+        # process single sub-folder
+        process_single_folder(sub_folder, os.path.join(folder_path, os.path.split(sub_folder)[1]), maximum_level,
+                              count_num, grid_percent, max_count, path, geojson_path, flag_val, summary_table,
+                              os.path.split(sub_folder)[1])
 
     # write out a summary table
     util = Utility()

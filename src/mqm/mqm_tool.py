@@ -124,7 +124,6 @@ def get_argument():
 
     # Check input file structure to ensure only geojson files are stored in each subdirectory of the input directory
     for item in Path(folder_path).glob('*/*'):
-        print(item.name.split('.'))
         if 'geojson' not in item.name.split('.') and not item.name.startswith('.'):
             sys.exit('Error: Directory must have the format Directory>Country>GeoJSONFile.geojson')
 

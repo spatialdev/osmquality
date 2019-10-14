@@ -115,7 +115,7 @@ def get_argument():
     parser.add_argument('--countNum', type=str, default='10', help='a count value for a stop condition')
     parser.add_argument('--gridPercent', type=str, default='0.9', help='a grid percentage')
     parser.add_argument('--maxCount', type=str, default='', help='maximum count to the second k-d tree')
-    parser.add_argument('--output', type=str, help='path to an output folder')
+    parser.add_argument('--output', type=str, required=True, help='path to an output folder')
     args = parser.parse_args()
     max_count = -1
     path = 'histogram'
@@ -127,9 +127,6 @@ def get_argument():
         if 'geojson' not in item.name.split('.') and not item.name.startswith('.'):
             sys.exit('Error: Directory must have the format Directory>Country>GeoJSONFile.geojson')
 
-    # Require output path
-    if not args.output:
-        sys.exit('Error: Output argument is required')
     output_folder = os.path.normpath(args.output)
 
     if args.maxCount:

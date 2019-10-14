@@ -125,7 +125,7 @@ def get_argument():
     return folder_path, args.maxDepth, output_folder, int(args.countNum), float(args.gridPercent), max_count, path, geojson_path
 
 
-def stop_condition(count_zero_list, count_list, grid_percent, count_num, in_grid_ids, out_distribution):
+def stop_condition(count_zero_list, count_list, grid_percent, count_num, cell_num, out_distribution):
     """ Stop condition function.
 
     This function calculates the stop condition to the first k-d tree.
@@ -154,7 +154,7 @@ def stop_condition(count_zero_list, count_list, grid_percent, count_num, in_grid
 
     # add zero-count back to the count list and find a maximum count that is smaller than a threshold
     if count_zero_list:
-        count_list.insert(0, count_zero_list[0])
+        count_list.insert(0, float(count_zero_list[0]))
     for ind, ele in enumerate(count_list):
         if ele > count_num:
             break
@@ -169,12 +169,11 @@ def stop_condition(count_zero_list, count_list, grid_percent, count_num, in_grid
             area_less_threshold = 0
 
             if count_list[0] == 0:
-                area_less_threshold = sum(out_distribution[key] for key in count_list[1: smallest_max_count_ind + 1]) + \
-                                      count_zero_list[1]
+                area_less_threshold = sum(out_distribution[key] for key in count_list[1: smallest_max_count_ind + 1]) + count_zero_list[1]
+                
             else:
                 area_less_threshold = sum(out_distribution[key] for key in count_list[: smallest_max_count_ind + 1])
 
-            # print(area_less_threshold)
             if (float(area_less_threshold / total_area)) >= grid_percent:
                 stop_flag = True
 

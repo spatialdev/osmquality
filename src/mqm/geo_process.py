@@ -212,7 +212,6 @@ class GeoProcessor:
         
         # loop through all geojson files
         for f in os.listdir(self.folder_path):
-            print(f)
             # load the Geo-json file and ignore other files
             if ('geojson' in (os.path.join(self.folder_path, f)).split('.')) and not f.startswith('.'):
                 if len(os.path.splitext(f)[0].split('-')) == 3:    # pull out this function

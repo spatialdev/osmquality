@@ -121,12 +121,6 @@ def get_argument():
     path = 'histogram'
     geojson_path = 'geojson'
     folder_path = os.path.normpath(args.input)
-
-    # Check input file structure to ensure only geojson files are stored in each subdirectory of the input directory
-    for item in Path(folder_path).glob('*/*'):
-        if 'geojson' not in item.name.split('.') and not item.name.startswith('.'):
-            sys.exit('Error: Directory must have the format Directory>Country>GeoJSONFile.geojson')
-
     output_folder = os.path.normpath(args.output)
 
     if args.maxCount:

@@ -210,16 +210,23 @@ class GeoProcessor:
         end_point = 0
 
         
-        # loop through all geojson files
-        for f in os.listdir(self.folder_path):
-            # load the Geo-json file and ignore other files
+        # Loop through all geojson files in folder path recursively
+        for roots, dirs, files in os.walk(self.folder_path):
+            checks_list = []
+            for f in files:
+                check_name = os.path.splitext(f)[0].split('-')[0]
+                if not check_name.startswith('.'):
+                    checks_list.append(check_name)
+            if len(checks_list) != len(set(checks_list)):
+                sys.exit('Each subdirectory must have only one GeoJSON per Atlas Check and no more than one boundary '
+                         'file')
+                # load the Geo-json file and ignore other files
             if ('geojson' in (os.path.join(self.folder_path, f)).split('.')) and not f.startswith('.'):
                 if len(os.path.splitext(f)[0].split('-')) == 3:    # pull out this function
                     if os.path.splitext(os.path.join(self.folder_path, f))[1] == '.gz':
                         name_num_list.append([os.path.splitext(f)[0].split('-')[0], int((os.path.splitext(f)[0].split('-')[2]).split('.')[0])])
                     else:
                         name_num_list.append([os.path.splitext(f)[0].split('-')[0], (int(os.path.splitext(f)[0].split('-')[2]))])
-                print(name_num_list)
 
                 # open geojson files
                 if os.path.splitext(os.path.join(self.folder_path, f))[1] == '.gz':
@@ -246,7 +253,7 @@ class GeoProcessor:
                         # ==============================
                         geometry_bounding_box_list.append(geometry_bounding_box)
                         self.output_data += tmp_geometry_collec
-                    
+
                     else:
                         # discard a feature without feature properties
                         if len(data['features'][geometry_index]['properties']['feature_properties']) != 0:
@@ -259,11 +266,11 @@ class GeoProcessor:
                                                      data['features'][geometry_index]['properties']['feature_properties'][0]['identifier'], f])
 
                             geometry_bounding_box_list.append(geometry_bounding_box)
-                    
+
                 # get a file bounding box for given multiple geometry bounding boxes, and add it into folder bounding box list
                 folder_bounding_box_set.append(self.final_bounding_box_generation(geometry_bounding_box_list, 4))
                 del geometry_bounding_box_list
-                
+
                 # update start point
                 start_point = len(data['features'])
 

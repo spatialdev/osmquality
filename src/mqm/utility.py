@@ -46,12 +46,12 @@ class Utility:
             
         """
         # plot histograms
-        fig, ax = plt.subplots()
-        ax.bar(range(len(statistics_result)), list(statistics_result.values()), align='center')
+        figure, axes = plt.subplots()
+        axes.bar(range(len(statistics_result)), list(statistics_result.values()), align='center')
         plt.xticks((0, len(statistics_result) - 1), (x_axis[0], x_axis[len(statistics_result) - 1]))
         plt.xlabel('Number of Flagged Features')
         plt.ylabel('Number of Grids')
-        fig.savefig(name)
+        figure.savefig(name)
         
     def distribution_computation(self, input_histogram):
         """ Distribution computation method.
@@ -162,17 +162,17 @@ class Utility:
             writer = csv.writer(out_f)
             writer.writerows(write_out_data)
     
-    def summary_table_row_generation(self, input_data, name_number_file, initial_extend, gridsize, folder_name):
+    def summary_table_row_generation(self, input_data, name_number_file, initial_extent, gridsize, iso3_country_code):
         """ A row generation to a summary table.
 
         This method generates a row of a summary table.
 
         Args:
-            input_data: a two-dimensional list with some important information.
-            name_number_file: a two-dimensional list with check names and the number of counts.
-            initial_extend: size of an initial extend.
-            gridsize: grid size.
-            folder_name: a folder name.
+            input_data: a two-dimensional list with some important information
+            name_number_file: a two-dimensional list with check names and the number of counts
+            initial_extent: size of an initial extent
+            gridsize: grid size
+            iso3_country_code: ISO3 country code e.g. USA
             
         Returns:
             [folder_name, flags, len(osm_features), initial_extend, gridsize]: an output list with a folder name, # of flags, # of osm features, the size of an initial extend, and grid size.
@@ -192,7 +192,7 @@ class Utility:
         
         
         # return one row
-        return [folder_name, flags, len(osm_features), initial_extend, gridsize]
+        return [iso3_country_code, flags, len(osm_features), initial_extent, gridsize]
     
     def get_sub_directionaries(self, folder_path):
         """ Sub-directionary grabbing.

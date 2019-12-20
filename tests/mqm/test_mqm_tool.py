@@ -59,3 +59,4 @@ def test_stop_condition():
     count_list_6 = [2.0, 3.0, 4.0, 5.0, 7.0, 8.0, 9.0, 10.0, 11.0, 16.0, 18.0, 20.0, 21.0, 31.0]
     test_case_6 = mqm.stop_condition(count_zero_list_6, count_list_6, 0.9, 5, 15, out_distribution_6)
     assert test_case_6 == True
+    

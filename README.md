@@ -19,12 +19,15 @@ pipenv shell
 
 
 **To run the program successfully, please follow steps:** <br />
-1. create an arbitrary directory storing all sub-directories, and put all input sub-directories into it. <br />
+1. Create an arbitrary directory storing containing either:
+    - Countrified subdirectories, each containing the relevant atlas check geometries and optional boundary 
+    - A set of atlas checks files and optional boundary without separate subdirectories (output will not be divided into subdirectories) <br />
 
-2. run the program through applying <br />
+2. Run the program through applying: <br />
 
 ```
-python3 -m mqm --folderPath [a absolute folder path] --maxDepth [maximum tree depth (default = 10)]
+python3 -m mqm --input [input directory containing atlas check geometries and boundary files] 
+--output [output directory to store results] --maxDepth [maximum tree depth (default = 10)]
 --countNum [a count number (default = 10)] --gridPercent [a grid percentage (default = 0.9)]
 --maxCount [maximum count to the second k-d tree]
 

@@ -209,18 +209,9 @@ class GeoProcessor:
         start_point = 0
         end_point = 0
 
-        
-        # Loop through all geojson files in folder path recursively
-        for roots, dirs, files in os.walk(self.folder_path):
-            checks_list = []
-            for f in files:
-                check_name = os.path.splitext(f)[0].split('-')[0]
-                if not check_name.startswith('.'):
-                    checks_list.append(check_name)
-            if len(checks_list) != len(set(checks_list)):
-                sys.exit('Each subdirectory must have only one GeoJSON per Atlas Check and no more than one boundary '
-                         'file')
-                # load the Geo-json file and ignore other files
+        # loop through all geojson files
+        for f in os.listdir(self.folder_path):
+            # load the Geo-json file and ignore other files
             if ('geojson' in (os.path.join(self.folder_path, f)).split('.')) and not f.startswith('.'):
                 if len(os.path.splitext(f)[0].split('-')) == 3:    # pull out this function
                     if os.path.splitext(os.path.join(self.folder_path, f))[1] == '.gz':

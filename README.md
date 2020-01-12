@@ -10,23 +10,37 @@ Eventually, this project will be on PyPI, which will make the following steps on
 
 **Installing dependencies**
 
-To run the MQM tool from source, please install Python3 and `pipenv`. Then, run the following command to install all of the dependencies: <br />
+The MQM tool is compatiable with python 3.7. The run from source, first install `pipenv`.
+
+With pip
 ```
-pipenv install
+pip install pipenv
+```
+Or homebrew...
+```
+brew install pipenv
+```
+Now you can create a virtual environment with python 3.7.
+```
+pipenv --python 3.7
 ```
 Activate the virtual environment by typing:
 ```
 pipenv shell
 ```
+And finally, install the MQM dependencies
+```
+pipenv install
+```
 
+**Running MQM**
 
-**To run the program successfully, please follow steps:** <br />
-1. create an arbitrary directory storing all sub-directories, and put all input sub-directories into it. <br />
-
-2. run the program through applying <br />
+Locate your [Atlas Checks](https://github.com/osmlab/atlas-checks) data to use as the input for MQM, and execute the following command:
 
 ```
-python3 -m mqm --folderPath [a absolute folder path] --maxDepth [maximum tree depth (default = 10)]
+python3 -m mqm 
+--folderPath [a absolute folder path] 
+--maxDepth [maximum tree depth (default = 10)]
 --countNum [a count number (default = 10)] --gridPercent [a grid percentage (default = 0.9)]
 --maxCount [maximum count to the second k-d tree]
 
@@ -58,11 +72,6 @@ MQM uses [tox](https://tox.readthedocs.io/en/latest/) and [pytest](https://docs.
 
 We also use `pipenv` to manage our developer environment, keeping it consistent across a variety of machines and local
 python environments.
-
-First, install `pipenv`:
-```
-pip install pipenv
-```
 
 Then, initialize a virtual environment for this project:
 ```

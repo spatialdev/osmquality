@@ -152,13 +152,13 @@ def stop_condition(count_zero_list, count_list, grid_percent, count_num, cell_nu
         
     """
     # variables
-    smallest_max_count = 0
+    smallest_max_count = 0.0
     smallest_max_count_ind = -1
     stop_flag = False
 
     # add zero-count back to the count list and find a maximum count that is smaller than a threshold
     if count_zero_list:
-        count_list.insert(0, count_zero_list[0])
+        count_list.insert(0, float(count_zero_list[0]))
     for ind, ele in enumerate(count_list):
         if ele > count_num:
             break
@@ -167,29 +167,19 @@ def stop_condition(count_zero_list, count_list, grid_percent, count_num, cell_nu
             smallest_max_count = ele
             smallest_max_count_ind = ind
 
-    # check the stop condition
-    if smallest_max_count_ind != -1:
-        total_count_within_count_num = 0
-        total_grids = 0
-        list_length = 0
+        # check the stop condition
+        if smallest_max_count_ind != -1:
+            total_area = sum(val for _, val in out_distribution.items()) + count_zero_list[1]
+            area_less_threshold = 0
 
-        if not count_zero_list:  # the list is empty
-            list_length = smallest_max_count_ind + 1
-            total_grids = cell_num
-            
-        else:
-            list_length = smallest_max_count_ind + 2
-            total_grids = cell_num + count_zero_list[1]
-
-        for i in range(list_length):
-            if count_list[i] == 0:
-                total_count_within_count_num += count_zero_list[1]
+            if count_list[0] == 0:
+                area_less_threshold = sum(out_distribution[key] for key in count_list[1: smallest_max_count_ind + 1]) + count_zero_list[1]
                 
             else:
-                total_count_within_count_num += out_distribution[count_list[i]]
-        
-        if (float(total_count_within_count_num / total_grids)) > grid_percent:
-            stop_flag = True
+                area_less_threshold = sum(out_distribution[key] for key in count_list[: smallest_max_count_ind + 1])
+
+            if (float(area_less_threshold / total_area)) >= grid_percent:
+                stop_flag = True
 
     return stop_flag
 

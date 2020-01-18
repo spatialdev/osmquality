@@ -1,5 +1,7 @@
 # Map Quality Measurement (MQM)
 
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=spatialdev_osmquality&metric=alert_status)](https://sonarcloud.io/dashboard?id=spatialdev_osmquality)
+
 OpenStreetMap (OSM) data quality is always a concern and frequently a barrier for use when compared to commercial data. Inspired by other OSM mapping projects, the Map Quality Measurement initiative intends to visualize map quality with a heat-map approach by summarizing map error indicators within relevant grids. We are not simply indicating areas that are missing map quality, we are providing insight for prioritization by overlapping social-economic metrics (e.g., population density, road density, etc.) to enable people-first decision-making when deciding where to work on improving map quality and function. The Map Quality Measure (MQM) is a heat-map style representation showing the map quality for a given geographic unit. To make MQM informative, the size and value of each unit used to summarize quality is sensitive to local context. Our project is developing an automated process to find the optimal heat-map grid size and update in response to an update trigger on demand.
 
 # Usage
@@ -8,22 +10,31 @@ Eventually, this project will be on PyPI, which will make the following steps on
 
 **Installing dependencies**
 
-To run the MQM tool from source, please install Python3 and `pipenv`. Then, run the following command to install all of the dependencies: <br />
+The MQM tool is compatiable with python 3.7. The run from source, first install `pipenv`.
+
+With pip
 ```
-pipenv install
+pip install pipenv
+```
+Or homebrew...
+```
+brew install pipenv
+```
+Now you can create a virtual environment with python 3.7.
+```
+pipenv --python 3.7
 ```
 Activate the virtual environment by typing:
 ```
 pipenv shell
 ```
+And finally, install the MQM dependencies
+```
+pipenv install
+```
 
-
-**To run the program successfully, please follow steps:** <br />
-1. Create an arbitrary directory storing containing either:
-    - Countrified subdirectories, each containing the relevant atlas check geometries and optional boundary 
-    - A set of atlas checks files and optional boundary without separate subdirectories (output will not be divided into subdirectories) <br />
-
-2. Run the program through applying: <br />
+**Running MQM**
+Locate your [Atlas Checks](https://github.com/osmlab/atlas-checks) data to use as the input for MQM, and execute the following command:
 
 ```
 python3 -m mqm --input [input directory containing atlas check geometries and boundary files] 
@@ -59,11 +70,6 @@ MQM uses [tox](https://tox.readthedocs.io/en/latest/) and [pytest](https://docs.
 
 We also use `pipenv` to manage our developer environment, keeping it consistent across a variety of machines and local
 python environments.
-
-First, install `pipenv`:
-```
-pip install pipenv
-```
 
 Then, initialize a virtual environment for this project:
 ```

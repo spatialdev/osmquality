@@ -11,6 +11,7 @@ matplotlib = "~=3.0.2"
 area = "~=1.1.1"
 numpy = "~=1.15.4"
 mqm = {editable = true,path = "."}
+pytest = "*"
 
 [requires]
 python_version = "3.7"

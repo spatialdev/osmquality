@@ -34,13 +34,11 @@ pipenv install
 ```
 
 **Running MQM**
-
 Locate your [Atlas Checks](https://github.com/osmlab/atlas-checks) data to use as the input for MQM, and execute the following command:
 
 ```
-python3 -m mqm 
---folderPath [a absolute folder path] 
---maxDepth [maximum tree depth (default = 10)]
+python3 -m mqm --input [input directory containing atlas check geometries and boundary files] 
+--output [output directory to store results] --maxDepth [maximum tree depth (default = 10)]
 --countNum [a count number (default = 10)] --gridPercent [a grid percentage (default = 0.9)]
 --maxCount [maximum count to the second k-d tree]
 
